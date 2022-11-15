@@ -10,8 +10,16 @@
 kubectl apply -n openshift-gitops -f https://raw.githubusercontent.com/argoproj-labs/argocd-image-updater/stable/manifests/install.yaml
 ```
 
-4. In your fork, modify the repository in `bootstrap/argocd/base/values.yaml` to reflect your repository
+4. Update the permissions for the image updater in the argocd CR in openshift-gitops:
 
-5. Deploy the applications via OpenShift GitOps by running the bootstrap script:
+```
+p, role:image-updater, applications, get, */*, allow
+p, role:image-updater, applications, update, */*, allow
+g, image-updater, role:image-updater
+```
+
+5. In your fork, modify the repository in `bootstrap/argocd/base/values.yaml` to reflect your repository
+
+6. Deploy the applications via OpenShift GitOps by running the bootstrap script:
 
 ```.bootstrap.sh```
