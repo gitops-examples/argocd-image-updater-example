@@ -4,8 +4,7 @@ metadata:
   name: server
 spec:
   workspaces:
-    - name: git-source
-    - name: maven-settings
+    - name: source
   params:
     - name: source_git_revision
       type: string
@@ -13,17 +12,10 @@ spec:
     - name: source_git_url
       type: string
       default: https://github.com/gnunn-gitops/product-catalog-server
-    - name: gitops_git_revision
-      type: string
-      default: main
-    - name: MAVEN_MIRROR_URL
-      default: ""
     - name: image_dest_url
       type: string
       description: External registry location to copy image to
       default: quay.io/gnunn/server
-    - name: MAVEN_IMAGE
-      default: image-registry.openshift-image-registry.svc:5000/openshift/java:openjdk-11-ubi8
   tasks:
     - name: clone
       taskRef:
@@ -31,7 +23,7 @@ spec:
         kind: ClusterTask
       workspaces:
         - name: output
-          workspace: git-source
+          workspace: source
       params:
         - name: url
           value: "$(params.source_git_url)"
@@ -47,16 +39,14 @@ spec:
         - clone
       workspaces:
         - name: source
-          workspace: git-source
+          workspace: source
     - name: build
       taskRef:
         name: maven
         kind: ClusterTask
       workspaces:
         - name: source
-          workspace: git-source
-        - name: maven-settings
-          workspace: maven-settings
+          workspace: source
       runAfter:
         - generate-id
       params:
@@ -76,7 +66,7 @@ spec:
         kind: ClusterTask
       workspaces:
         - name: source
-          workspace: git-source
+          workspace: source
       runAfter:
         - build
       params:

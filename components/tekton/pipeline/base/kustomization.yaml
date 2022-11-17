@@ -1,2 +1,3 @@
 resources:
 - server-pipeline.yaml
+- source-pvc.yaml
