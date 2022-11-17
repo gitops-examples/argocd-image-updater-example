@@ -1,3 +1,4 @@
 resources:
 - server-pipeline.yaml
 - source-pvc.yaml
+- maven-settings-pvc.yaml
