@@ -67,7 +67,7 @@ spec:
         - build
       params:
       - name: IMAGE
-        value: ${image_dest_url}:$(tasks.generate-id.results.tag_id)
+        value: $(params.image_dest_url):$(tasks.generate-id.results.tag_id)
       - name: DOCKERFILE
         value: ./Containerfile        
     - name: tag-dev-image
