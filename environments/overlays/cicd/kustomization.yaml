@@ -1,4 +1,4 @@
-namespace: demo-dev
+namespace: demo-cicd
 
 resources:
 - namespace.yaml
