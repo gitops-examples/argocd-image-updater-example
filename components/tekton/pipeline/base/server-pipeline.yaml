@@ -16,7 +16,7 @@ spec:
     - name: image_dest_url
       type: string
       description: External registry location to copy image to
-      default: image-registry.image-registry.svc:5000/demo-cicd/server:latest
+      default: quay.io/gnunn/server
   tasks:
     - name: clone
       taskRef:
@@ -67,7 +67,7 @@ spec:
         - build
       params:
       - name: IMAGE
-        value: image-registry.image-registry.svc:5000/demo-cicd/server:latest
+        value: ${image_dest_url}:$(tasks.generate-id.results.tag_id)
       - name: DOCKERFILE
         value: ./Containerfile        
     - name: tag-dev-image
@@ -78,6 +78,6 @@ spec:
         - build-image
       params:
         - name: srcImageURL
-          value: image-registry.image-registry.svc:5000/demo-cicd/server:latest
+          value: $(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
         - name: destImageURL
-          value: image-registry.image-registry.svc:5000/demo-dev/server:dev
+          value: $(params.image_dest_url):dev
