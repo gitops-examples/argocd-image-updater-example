@@ -2,3 +2,5 @@ namespace: demo-cicd
 
 resources:
 - namespace.yaml
+- ../../../components/tekton/pipeline/base
+- ../../../components/tekton/tasks/base

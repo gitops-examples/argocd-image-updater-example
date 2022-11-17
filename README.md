@@ -18,8 +18,10 @@ p, role:image-updater, applications, update, */*, allow
 g, image-updater, role:image-updater
 ```
 
-5. In your fork, modify the repository in `bootstrap/argocd/base/values.yaml` to reflect your repository
+5. Install the OpenShift Pipelines operator
 
-6. Deploy the applications via OpenShift GitOps by running the bootstrap script:
+6. In your fork, modify the repository in `bootstrap/argocd/base/values.yaml` to reflect your repository
+
+7. Deploy the applications via OpenShift GitOps by running the bootstrap script:
 
 ```.bootstrap.sh```

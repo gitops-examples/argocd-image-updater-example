@@ -1,0 +1,99 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: server
+spec:
+  workspaces:
+    - name: git-source
+    - name: maven-settings
+  params:
+    - name: source_git_revision
+      type: string
+      default: master
+    - name: source_git_url
+      type: string
+      default: https://github.com/gnunn-gitops/product-catalog-server
+    - name: gitops_git_revision
+      type: string
+      default: main
+    - name: MAVEN_MIRROR_URL
+      default: ""
+    - name: image_dest_url
+      type: string
+      description: External registry location to copy image to
+      default: quay.io/gnunn/server
+    - name: MAVEN_IMAGE
+      default: image-registry.openshift-image-registry.svc:5000/openshift/java:openjdk-11-ubi8
+  tasks:
+    - name: clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: git-source
+      params:
+        - name: url
+          value: "$(params.source_git_url)"
+        - name: revision
+          value: "$(params.source_git_revision)"
+        - name: deleteExisting
+          value: "true"
+    - name: generate-id
+      taskRef:
+        name: generate-id
+        kind: Task
+      runAfter:
+        - clone
+      workspaces:
+        - name: source
+          workspace: git-source
+    - name: build
+      taskRef:
+        name: maven
+        kind: ClusterTask
+      workspaces:
+        - name: source
+          workspace: git-source
+        - name: maven-settings
+          workspace: maven-settings
+      runAfter:
+        - generate-id
+      params:
+        - name: MAVEN_IMAGE
+          value: $(params.MAVEN_IMAGE)
+        - name: MAVEN_MIRROR_URL
+          value: "$(params.MAVEN_MIRROR_URL)"
+        - name: MAVEN_REPO_CONFIG_SECRET
+          value: "maven-repo-creds"
+        - name: GOALS
+          value:
+            - "package"
+            - "deploy"
+    - name: build-image
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      workspaces:
+        - name: source
+          workspace: git-source
+      runAfter:
+        - build
+      params:
+      - name: IMAGE
+        value: $(params.image_dest_url):latest
+      - name: DOCKERFILE
+        value: ./Containerfile        
+    - name: tag-dev-image
+      taskRef:
+        name: push-image
+        kind: Task
+      runAfter:
+        - build-image
+      params:
+        - name: src_image
+          value: $(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
+        - name: dest_image
+          value: $(params.image_dest_url)
+        - name: dest_tags
+          value: $(tasks.generate-id.results.tag_id),dev
