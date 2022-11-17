@@ -6,6 +6,7 @@ spec:
   workspaces:
     - name: source
     - name: maven-settings
+    - name: images-url
   params:
     - name: source_git_revision
       type: string
@@ -15,7 +16,7 @@ spec:
       default: https://github.com/gnunn-gitops/product-catalog-server
     - name: image_dest_url
       type: string
-      description: External registry location to copy image to
+      description: External registry location for image
       default: quay.io/gnunn/server
   tasks:
     - name: clone
@@ -74,6 +75,9 @@ spec:
       taskRef:
         name: skopeo-copy
         kind: ClusterTask
+      workspaces:
+        - name: images-url
+          workspace: images-url
       runAfter:
         - build-image
       params:
