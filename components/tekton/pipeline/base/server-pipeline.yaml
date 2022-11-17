@@ -86,14 +86,12 @@ spec:
         value: ./Containerfile        
     - name: tag-dev-image
       taskRef:
-        name: push-image
-        kind: Task
+        name: skopeo-copy
+        kind: ClusterTask
       runAfter:
         - build-image
       params:
-        - name: src_image
+        - name: srcImageURL
           value: $(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
-        - name: dest_image
-          value: $(params.image_dest_url)
-        - name: dest_tags
-          value: $(tasks.generate-id.results.tag_id),dev
+        - name: destImageURL
+          value: $(params.image_dest_url):dev
