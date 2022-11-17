@@ -82,6 +82,6 @@ spec:
         - build-image
       params:
         - name: srcImageURL
-          value: $(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
+          value: docker://$(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
         - name: destImageURL
-          value: $(params.image_dest_url):dev
+          value: docker://$(params.image_dest_url):dev
