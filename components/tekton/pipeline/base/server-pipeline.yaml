@@ -50,16 +50,9 @@ spec:
       runAfter:
         - generate-id
       params:
-        - name: MAVEN_IMAGE
-          value: $(params.MAVEN_IMAGE)
-        - name: MAVEN_MIRROR_URL
-          value: "$(params.MAVEN_MIRROR_URL)"
-        - name: MAVEN_REPO_CONFIG_SECRET
-          value: "maven-repo-creds"
         - name: GOALS
           value:
             - "package"
-            - "deploy"
     - name: build-image
       taskRef:
         name: buildah
