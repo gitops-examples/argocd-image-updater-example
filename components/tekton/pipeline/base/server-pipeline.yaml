@@ -5,6 +5,7 @@ metadata:
 spec:
   workspaces:
     - name: source
+    - name: maven-settings
   params:
     - name: source_git_revision
       type: string
@@ -47,6 +48,8 @@ spec:
       workspaces:
         - name: source
           workspace: source
+        - name: maven-settings
+          workspace: maven-settings
       runAfter:
         - generate-id
       params:
