@@ -1,7 +1,10 @@
 namespace: demo-prod
-
 resources:
 - namespace.yaml
 - github.com/gnunn-gitops/product-catalog/components/apps/database/base
 - github.com/gnunn-gitops/product-catalog/components/apps/client/base
 - github.com/gnunn-gitops/product-catalog/components/apps/server/base
+images:
+- name: quay.io/gnunn/server
+  newName: quay.io/gnunn/server
+  newTag: test
