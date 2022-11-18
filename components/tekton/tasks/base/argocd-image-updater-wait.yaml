@@ -31,7 +31,7 @@ spec:
     - name: timeout
       description: How long to wait for the image to appear in seconds
       default: "60"
-    - name: oc-version
+    - name: version
       description: The version of the openshift client to use
       default: latest
   steps:
