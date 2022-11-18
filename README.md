@@ -51,3 +51,11 @@ oc create secret docker-registry container-registry --from-file=.dockerconfigjso
 ```
 oc secrets link pipeline container-registry --for=pull,mount -n demo-cicd
 ```
+
+11. Add your gitops credentials to the demo-cicd namespace so that the argocd-image-updater can update the git repository:
+
+```
+oc -n argocd-image-updater create secret generic git-creds \
+  --from-literal=username=<username> \
+  --from-literal=password=<password or PAT> -n demo-cicd
+```
