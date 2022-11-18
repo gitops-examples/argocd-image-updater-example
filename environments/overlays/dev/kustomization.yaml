@@ -7,4 +7,4 @@ resources:
 images:
 - name: quay.io/gnunn/server
   newName: quay.io/gnunn/server
-  newTag: test
+  newTag: dev
