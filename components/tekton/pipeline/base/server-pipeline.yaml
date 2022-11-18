@@ -7,6 +7,7 @@ spec:
     - name: source
     - name: maven-settings
     - name: images-url
+    - name: newman-env
   params:
     - name: source_git_revision
       type: string
@@ -71,7 +72,7 @@ spec:
         value: $(params.image_dest_url):$(tasks.generate-id.results.tag_id)
       - name: DOCKERFILE
         value: ./Containerfile        
-    - name: tag-dev-image
+    - name: dev-tag-image
       taskRef:
         name: skopeo-copy
         kind: ClusterTask
@@ -85,3 +86,29 @@ spec:
           value: docker://$(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
         - name: destImageURL
           value: docker://$(params.image_dest_url):dev
+    - name: dev-wait-for-update
+      taskRef:
+        name: argocd-image-updater-wait
+      runAfter:
+        - dev-tag-image
+      params:
+        - name: deployment
+          value: server
+        - name: namespace
+          value: demo-dev
+        - name: digest
+          value: $(tasks.build-image.results.IMAGE_DIGEST)
+    - name: dev-automated-tests
+      taskRef:
+        name: newman
+        kind: Task
+      runAfter:
+        - dev-wait-for-update
+      params:
+        - name: COLLECTION
+          value: $(params.api_test_collection_url)
+        - name: ENVIRONMENT
+          value: newman-dev-env.json
+      workspaces:
+        - name: newman-env
+          workspace: newman-env

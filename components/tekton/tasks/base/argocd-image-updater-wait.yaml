@@ -1,0 +1,59 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: argocd-image-updater-wait
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/categories: Deployment
+    tekton.dev/tags: deploy
+    tekton.dev/displayName: "argocd"
+    tekton.dev/platforms: "linux/amd64"
+spec:
+  description: >-
+    This tasks wait for the argo cd image updater to update the image reference. It does
+    not require access to argo cd as it simply monitors the deployment waiting for the
+    right image to appear.
+
+    As a result this task is best used when there is no pipeline concurrency.
+
+  params:
+    - name: deployment
+      description: name of the deployment
+    - name: namespace
+      description: namespace where the deployment is located
+    - name: digest
+      description: digest of the image that is expected to be deployed, must include the 'sha256:' prefix
+    - name: container
+      description: the ordinal position in the container (0,1,2) in .spec.template.spec.containers
+      default: "0"
+    - name: timeout
+      description: How long to wait for the image to appear in seconds
+      default: "60"
+    - name: oc-version
+      description: The version of the openshift client to use
+      default: latest
+  steps:
+    - name: wait-for-update
+      image: image-registry.openshift-image-registry.svc:5000/openshift/cli:$(params.version)
+      script: |
+
+        echo "Checking current tag in namespace $(params.namespace)"
+        
+        end=$((SECONDS+$(params.timeout)))
+        while [ $SECONDS -lt $end ]; do        
+          CURRENT_DIGEST=$(oc get deploy $(params.deployment) -n $(params.namespace) -o jsonpath="{.spec.template.spec.containers[$(params.container)].image}" | cut -d "@" -f2)
+          if [ "$CURRENT_DIGEST" = "$(params.digest)" ]; then
+            echo "Image has been synced, exiting"
+            exit 0
+          fi
+        done
+
+        CURRENT_DIGEST=$(oc get deploy $(params.deployment) -n $(params.namespace) -o jsonpath="{.spec.template.spec.containers[$(params.container)].image}" | cut -d "@" -f2)
+        if [ "$CURRENT_DIGEST" = "$(params.digest)" ]; then
+          echo "Image has been synced"
+        else
+          echo "Image failed to sync, requested digest is $(params.digest) but current digest is $CURRENT_DIGEST"
+          exit 1;
+        fi
