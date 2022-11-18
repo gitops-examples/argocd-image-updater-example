@@ -8,4 +8,4 @@ resources:
 images:
 - name: quay.io/gnunn/server
   newName: quay.io/gnunn/server
-  digest: sha256:47d3a078c3d572df3ad7bb696ccf96bc01f76c9e44119581621bd91987616f44
+  digest: sha256:c0ad5fb754264740bf992b42d428f3b08f727777a129559523aaf4cab8422acc
