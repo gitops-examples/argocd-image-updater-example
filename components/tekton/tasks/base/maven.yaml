@@ -62,7 +62,15 @@ spec:
     description: The context directory within the repository for sources on which
       we want to execute maven goals.
     name: CONTEXT_DIR
+  - type: string
+    name: M2_DIRECTORY
     type: string
+    description: Location of M2 directory, do not change
+    default: /home/jboss/.m2/  
+  stepTemplate:
+    volumeMounts:
+      - name: m2-repository
+        mountPath: $(params.M2_DIRECTORY)      
   steps:
   - env:
     - name: HOME
@@ -157,3 +165,7 @@ spec:
   - description: The workspace consisting of the custom maven settings provided by
       the user.
     name: maven-settings
+  volumes:
+    - name: m2-repository
+      persistentVolumeClaim:
+        claimName: m2-cache
