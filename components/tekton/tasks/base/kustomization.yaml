@@ -1,4 +1,4 @@
 resources:
 - task-generate-id.yaml
 - https://github.com/redhat-cop/gitops-catalog/openshift-pipelines-tasks/newman/base
-- argocd-image-updater-wait
+- argocd-image-updater-wait.yaml
