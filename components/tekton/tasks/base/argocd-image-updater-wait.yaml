@@ -48,6 +48,8 @@ spec:
             echo "Image has been synced, exiting"
             exit 0
           fi
+          echo "Current digest is ${CURRENT_DIGEST}, waiting for $(params.digest), sleeping for 5 seconds..."
+          sleep 5
         done
 
         CURRENT_DIGEST=$(oc get deploy $(params.deployment) -n $(params.namespace) -o jsonpath="{.spec.template.spec.containers[$(params.container)].image}" | cut -d "@" -f2)
