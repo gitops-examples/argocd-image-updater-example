@@ -3,13 +3,36 @@ default:
     enabled: true
     enableAutoSync: true
     autoSyncPrune: false
-    project: default
+    project: argocd-image-updater
     destination:
       namespace: openshift-gitops
       server: https://kubernetes.default.svc
     source:
       repoURL: https://github.com/gitops-examples/argocd-image-updater-example
       targetRevision: main
+
+projects:
+
+  argocd-image-updater:
+    description: Project for Argo CD Image Updater demo 
+    namespace: openshift-gitops
+    sourceRepos:
+    - '*'
+    destinations: |
+      - namespace: 'demo-cicd'
+        server: https://kubernetes.default.svc
+      - namespace: 'demo-dev'
+        server: https://kubernetes.default.svc
+      - namespace: 'demo-test'
+        server: https://kubernetes.default.svc
+      - namespace: 'demo-prod'
+        server: https://kubernetes.default.svc
+      - namespace: 'stackrox'
+        server: https://kubernetes.default.svc
+    extraFields: |
+      clusterResourceWhitelist:
+      - group: '*'
+        kind: '*'
 
 applications:
 
