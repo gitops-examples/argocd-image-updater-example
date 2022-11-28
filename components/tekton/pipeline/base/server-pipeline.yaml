@@ -115,3 +115,83 @@ spec:
       workspaces:
         - name: newman-env
           workspace: newman-env
+    - name: test-tag-image
+      taskRef:
+        name: skopeo-copy
+        kind: ClusterTask
+      workspaces:
+        - name: images-url
+          workspace: images-url
+      runAfter:
+        - dev-automated-tests
+      params:
+        - name: srcImageURL
+          value: docker://$(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
+        - name: destImageURL
+          value: docker://$(params.image_dest_url):test
+    - name: test-wait-for-update
+      taskRef:
+        name: argocd-image-updater-wait
+      runAfter:
+        - test-tag-image
+      params:
+        - name: deployment
+          value: server
+        - name: namespace
+          value: demo-test
+        - name: digest
+          value: $(tasks.build-image.results.IMAGE_DIGEST)
+    - name: test-automated-tests
+      taskRef:
+        name: newman
+        kind: Task
+      runAfter:
+        - test-wait-for-update
+      params:
+        - name: COLLECTION
+          value: $(params.api_test_collection_url)
+        - name: ENVIRONMENT
+          value: newman-test-env.json
+      workspaces:
+        - name: newman-env
+          workspace: newman-env
+    - name: prod-tag-image
+      taskRef:
+        name: skopeo-copy
+        kind: ClusterTask
+      workspaces:
+        - name: images-url
+          workspace: images-url
+      runAfter:
+        - test-automated-tests
+      params:
+        - name: srcImageURL
+          value: docker://$(params.image_dest_url)@$(tasks.build-image.results.IMAGE_DIGEST)
+        - name: destImageURL
+          value: docker://$(params.image_dest_url):prod
+    - name: prod-wait-for-update
+      taskRef:
+        name: argocd-image-updater-wait
+      runAfter:
+        - prod-tag-image
+      params:
+        - name: deployment
+          value: server
+        - name: namespace
+          value: demo-prod
+        - name: digest
+          value: $(tasks.build-image.results.IMAGE_DIGEST)
+    - name: prod-automated-tests
+      taskRef:
+        name: newman
+        kind: Task
+      runAfter:
+        - prod-wait-for-update
+      params:
+        - name: COLLECTION
+          value: $(params.api_test_collection_url)
+        - name: ENVIRONMENT
+          value: newman-prod-env.json
+      workspaces:
+        - name: newman-env
+          workspace: newman-env          
