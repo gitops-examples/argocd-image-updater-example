@@ -43,9 +43,9 @@ g, image-updater, role:image-updater
 
 7. In your fork, modify the repository in `bootstrap/argocd/base/values.yaml` to reflect your forked repository and your forked registry, in particular change:
 
-* Change the repoURL from `https://github.com/gitops-examples/argocd-image-updater-example` to your forked repo
-* Change the value of `argocd-image-updater.argoproj.io/image-list` from `quay.io/gnunn/server:<tag>` to your registry, i.e. `quay.io/<your-user-name>/server`
-* Do NOT change annotation `argocd-image-updater.argoproj.io/server.kustomize.image-name` since this is the image referenced in the deployment.
+	* Change the repoURL from `https://github.com/gitops-examples/argocd-image-updater-example` to your forked repo
+	* Change the value of `argocd-image-updater.argoproj.io/image-list` from `quay.io/gnunn/server:<tag>` to your registry, i.e. `quay.io/<your-user-name>/server`
+	* Do NOT change annotation `argocd-image-updater.argoproj.io/server.kustomize.image-name` since this is the image referenced in the deployment.
 
 8. Deploy the applications via OpenShift GitOps by running the bootstrap script:
 
