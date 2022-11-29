@@ -11,7 +11,7 @@ From a pipelines point of view once the image is built the following steps are t
 
 Note that step #2 is performed with a custom [task](components/tekton/tasks/base/argocd-image-updater-wait.yaml) that monitors the image currently deployed and waits for it to match the digest of the new image.
 
-### Pre-requisites
+### Prerequisites
 
 1. You will need kustomize and helm deployed on your local machine
 2. An account in GitHub in order to fork this repository
