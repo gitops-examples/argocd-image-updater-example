@@ -11,5 +11,6 @@ configMapGenerator:
 resources:
 - source-pvc.yaml
 - maven-settings-pvc.yaml
+- m2-cache-pvc.yaml
 - images-url-pvc.yaml
 - server-pipeline.yaml
