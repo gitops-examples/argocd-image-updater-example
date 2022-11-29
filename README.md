@@ -101,7 +101,7 @@ oc -n argocd-image-updater create secret generic git-creds \
 
 ![alt text](https://raw.githubusercontent.com/gitops-examples/argocd-image-updater-example/main/docs/img/argo-cd-app-status.png)	
 
-Note that the demo-cicd project may show progressing because the PVCs are in a pending state waiting for them to be bound when you execute the pipeline.
+Note that the demo-cicd project may show progressing because the PVCs are in a pending state waiting for them to be bound when you execute the pipeline. You can correct this by modifing the PVC health check in Argo CD but you will only notice this prior to the first run.
 
 ![alt text](https://raw.githubusercontent.com/gitops-examples/argocd-image-updater-example/main/docs/img/demo-cicd-progressing-details.png)	
 
