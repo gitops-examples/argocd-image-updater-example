@@ -19,6 +19,8 @@ Note that step #2 is performed with a custom task that monitors the image curren
 
 ### Steps to deploy
 
+Here are the steps required to install this demo, note this is assuming an empty cluster (such as one from RHPDS).
+
 1. Fork this repository
 
 2. Install the OpenShift GitOps operator via Operator Hub
@@ -32,10 +34,15 @@ kubectl apply -n openshift-gitops -f https://raw.githubusercontent.com/argoproj-
 4. Update the permissions for the image updater in the argocd CR in openshift-gitops:
 
 ```
-p, role:image-updater, applications, get, */*, allow
-p, role:image-updater, applications, update, */*, allow
-g, image-updater, role:image-updater
+	rbac:
+	  policy: |
+		...
+		p, role:image-updater, applications, get, */*, allow
+		p, role:image-updater, applications, update, */*, allow
+		g, image-updater, role:image-updater
 ```
+
+Ignore the warning about this being a managed resource.
 
 5. Install the OpenShift Pipelines operator
 
@@ -49,7 +56,7 @@ g, image-updater, role:image-updater
 
 8. Deploy the applications via OpenShift GitOps by running the bootstrap script:
 
-```.bootstrap.sh```
+```./bootstrap.sh```
 
 9. Create a docker secret for the registry in step #8 in the `demo-cicd` namespace so that the pipeline can access your repository, first create a .dockerconfigjson file, here is an example:
 
@@ -63,7 +70,12 @@ g, image-updater, role:image-updater
 }
 ```
 
-Now create a secret out of that file:
+Note that the `XXXXXXX` part is a base64 of "<username>:<password>" using your username/password for the registry. You can create this in Linux with the following command:
+
+```
+echo -n "<username>:<password>" | base64"
+```
+And then taking the string that is output and replacing auth with it. Now create a secret out of that file:
 
 ```
 oc create secret docker-registry container-registry --from-file=.dockerconfigjson -n demo-cicd
@@ -82,3 +94,25 @@ oc -n argocd-image-updater create secret generic git-creds \
   --from-literal=username=<username> \
   --from-literal=password=<password or PAT> -n demo-cicd
 ```
+
+### Validate the Deployment
+
+1. Navigate to your Argo CD and verify that all of the applications are deployed and are in sync. 
+
+Note that the demo-cicd project may show progressing because the PVCs are in a pending state waiting for them to be bound when you execute the pipeline.
+
+### Execute the Pipeline
+
+1. Navigate to the `demo-cicd` project and select Pipelines in the console.
+
+2. You should see one pipeline, click the kebab menu and select `Start`
+
+3. A new window will appear for Pipeline parameters, change the following items:
+
+	* Change `image_dest_url` to point to your image repository
+	* Set all of the workspaces as per the image below.
+
+4. Press `Start` at the bottom of the pipeline to execute it.
+
+
+
