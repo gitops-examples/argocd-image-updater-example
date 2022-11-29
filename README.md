@@ -99,7 +99,11 @@ oc -n argocd-image-updater create secret generic git-creds \
 
 1. Navigate to your Argo CD and verify that all of the applications are deployed and are in sync. 
 
+![alt text](https://raw.githubusercontent.com/gitops-examples/argocd-image-updater-example/main/docs/img/argo-cd-app-status.png)	
+
 Note that the demo-cicd project may show progressing because the PVCs are in a pending state waiting for them to be bound when you execute the pipeline.
+
+![alt text](https://raw.githubusercontent.com/gitops-examples/argocd-image-updater-example/main/docs/img/demo-cicd-progressing-details.png)	
 
 ### Execute the Pipeline
 
@@ -112,7 +116,20 @@ Note that the demo-cicd project may show progressing because the PVCs are in a p
 	* Change `image_dest_url` to point to your image repository
 	* Set all of the workspaces as per the image below.
 
+![alt text](https://raw.githubusercontent.com/gitops-examples/argocd-image-updater-example/main/docs/img/pipeline-workspaces.png)	
+
 4. Press `Start` at the bottom of the pipeline to execute it.
 
+	* Note the first time you run the pipeline the build step will take time to execute since it is downloading all of the dependencies from maven repositories. These are cached in a PVC so subsequent executions should be much faster
 
+5. If everything went to plan you should see the pipeline successfully execute:
 
+![alt text](https://raw.githubusercontent.com/gitops-examples/argocd-image-updater-example/main/docs/img/pipeline-success.png)	
+
+### Optimizations
+
+1. Note that it can take some time for Image Updater to pick up the tag change in the registry and then more time for Argo CD to deploy the changed manifests. You can optimize this a bit by setting up a webhook between the manifest repository `argocd-image-updater-example` and Argo CD. This removes the time waiting for Argo CD to poll the repository.
+
+There doesn't appear to be a way to have Argo CD Image Updater accept a webhook from the registry at this time per this [issue](https://github.com/argoproj-labs/argocd-image-updater/issues/1).
+
+2. With quay.io I'm briefly getting a degraded deployment as the digest cannot be pulled, need to investigate this further.
