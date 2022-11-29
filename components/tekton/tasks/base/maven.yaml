@@ -64,7 +64,6 @@ spec:
     name: CONTEXT_DIR
   - type: string
     name: M2_DIRECTORY
-    type: string
     description: Location of M2 directory, do not change
     default: /home/jboss/.m2/  
   stepTemplate:
