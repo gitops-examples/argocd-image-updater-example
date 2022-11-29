@@ -9,7 +9,7 @@ From a pipelines point of view once the image is built the following steps are t
 2. Wait for the Argo CD Image Updater to write the image reference and for Argo to deploy it
 3. Run an automated test (using newman) to validate the application deployment
 
-Note that step #2 is performed with a custom task that monitors the image currently deployed and waits for it to match the digest of the new image.
+Note that step #2 is performed with a custom [task](components/tekton/tasks/base/argocd-image-updater-wait.yaml) that monitors the image currently deployed and waits for it to match the digest of the new image.
 
 ### Pre-requisites
 
@@ -129,6 +129,5 @@ Note that the demo-cicd project may show progressing because the PVCs are in a p
 ### Optimizations
 
 1. Note that it can take some time for Image Updater to pick up the tag change in the registry and then more time for Argo CD to deploy the changed manifests. You can optimize this a bit by setting up a webhook between the manifest repository `argocd-image-updater-example` and Argo CD. This removes the time waiting for Argo CD to poll the repository. There doesn't appear to be a way to have Argo CD Image Updater accept a webhook from the registry at this time per this [issue](https://github.com/argoproj-labs/argocd-image-updater/issues/1).
-
 
 2. With quay.io I'm briefly getting a degraded deployment as the digest cannot be pulled, need to investigate this further.
