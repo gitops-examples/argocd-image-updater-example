@@ -1,6 +1,6 @@
 ### Introduction
 
-This demo shows how to use [Argo CD Image Updater](https://argocd-image-updater.readthedocs.io/en/stable) with OpenShift Pipelines (i.e. Tekton) to manage the promotion of a new image across environments.
+This demo shows how to use community [Argo CD Image Updater](https://argocd-image-updater.readthedocs.io/en/stable) with OpenShift Pipelines (i.e. Tekton) to manage the promotion of a new image across environments.
 
 The way this demo works is that Argo CD Image Updater is configured to monitor an image repository for changes in environment tags, i.e. `dev`, `test` and `prod`, and when this happens to update the manifests in git to reference the new image via its digest. This writeback is done using the `kustomize edit set image` to have [kustomize](https://kustomize.io) override the value in the deployment manifest.
 
